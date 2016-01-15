@@ -12,9 +12,9 @@ exit $?;
 
 sub parse_options {
 	my $options = {};
-	GetOptions( $options, 'bowtie_out_file|b=s@', 'ref_input_file|r=s', 'help|h' );
+	GetOptions( $options, 'bowtie_out_file|b=s@', 'ref_input_file|r=s@', 'help|h' );
 	unless( $$options{ 'bowtie_out_file' } and $$options{ 'ref_input_file' } ) {
-		print STDERR "Usage: $0 <--bowtie_out_file|-b> <--ref_input_file|-r> [--bowtie_out_file|-b]\n";
+		print STDERR "Usage: $0 <--bowtie_out_file|-b> <--ref_input_file|-r> [--bowtie_out_file|-b] [--ref_input_file]\n";
 		exit 1;
 	}
 	return $options;
@@ -39,27 +39,33 @@ sub process_info {
 }
 
 sub print_info {
-	my( $info, $ref_file ) = @_;
+	my( $info, $ref_file_list ) = @_;
 	my @files = keys %$info;
 	my @base_names = ();
 	foreach my $file( @files ) {
-		push @base_names, basename( $file );
+		my $base = basename( $file );
+		$base =~ s/\.bowtie.out//;
+		push @base_names, $base;
 	}
 	print STDOUT join( ",", ( 'Gene', 'Symbol', 'OligoSeq', @base_names ) ), "\n";
-	open( FH, "<$ref_file" ) or die "Error in opening the file, $ref_file, $!\n";
-	while( my $line = <FH> ) {
-		next unless substr( $line, 0, 1 ) eq '>' ;
-		chomp $line;
-		$line =~ s/^>//;
-		my @nums = ();
-		foreach my $file( @files ) {
-			if( exists $$info{ $file }{ $line } ) {
-				push @nums, $$info{ $file }{ $line };
-			} else {
-				push @nums, 0;
+	foreach my $ref_file( @$ref_file_list ) {
+		open( FH, "<$ref_file" ) or die "Error in opening the file, $ref_file, $!\n";
+		while( my $line = <FH> ) {
+			next unless substr( $line, 0, 1 ) eq '>' ;
+			chomp $line;
+			$line =~ s/^>//;
+			my @nums = ();
+			my $skip = 1;
+			foreach my $file( @files ) {
+				if( exists $$info{ $file }{ $line } ) {
+					$skip = 0;
+					push @nums, $$info{ $file }{ $line };
+				} else {
+					push @nums, 0;
+				}
 			}
+			print STDOUT join( ',', ( split( ";", $line ), @nums ) ), "\n" unless $skip;
 		}
-		print STDOUT join( ',', ( split( ";", $line ), @nums ) ), "\n";
+		close FH or die "Error in closing the file, $ref_file, $!\n";
 	}
-	close FH or die "Error in closing the file, $ref_file, $!\n";
 }
