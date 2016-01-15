@@ -52,7 +52,7 @@ rule demultiplex:
         universal_primer=lambda wildcards: file_info[wildcards.sample]["universal_primer"],
         barcode=lambda wildcards: file_info[wildcards.sample]["barcode"]
     shell:
-        "perl CRISPR_stag/scripts/fetch_stag_seqs.pl --ref_file {input} --out_file {output} --universal_primer {params.universal_primer} --barcode {params.barcode}"
+        "zcat {input} | perl CRISPR_stag/scripts/fetch_stag_seqs.pl --out_file {output} --universal_primer {params.universal_primer} --barcode {params.barcode}"
 
 rule csv_to_fasta:
     input:
