@@ -9,7 +9,7 @@ with open("metasheet.csv", "r") as fh:
     next(fh)
     for line in fh:
         info = line.strip().split(",")
-        file_info[info[0]] = {"barcode": info[1].upper(), "universal_primer": info[2].upper(), "lib_type": info[3]}
+        file_info[info[0]] = {"barcode": info[1].upper(), "universal_primer": info[2].upper(), "input_file": info[3], "lib_type": info[4]}
 
 lib_info = {
     "Human_A": "/zfs/cores/mbcf/mbcf-storage/devel/umv/ref_files/human/Homo_sapiens/CRISPR/Gecko/Human_GeCKOv2_Library_A_09Mar2015",
@@ -45,7 +45,7 @@ rule target:
 
 rule demultiplex:
     input:
-        "concat_per_sample_fastq/122915-CRISPRpool-HK2625_S1_R1_001.fastq.gz"
+        lambda wildcards: "concat_per_sample_fastq/" + file_info[wildcards.sample]["input_file"]
     output:
         "analysis/demultiplex/{sample}/{sample}.fastq.gz"
     params:
