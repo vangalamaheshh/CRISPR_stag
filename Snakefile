@@ -37,11 +37,11 @@ def bowtie_index_paths( wildcards ):
 
 rule target:
     input:
-        get_file_names
-#        csv2fa,
-#        bowtie_index_paths,
-#        expand( "analysis/bowtie_align/{sample}.bowtie.out", sample=file_info.keys() ),
-#        "analysis/align_report.csv"
+        get_file_names,
+        csv2fa,
+        bowtie_index_paths,
+        expand( "analysis/bowtie_align/{sample}.bowtie.out", sample=file_info.keys() ),
+        "analysis/align_report.csv"
 
 rule demultiplex:
     input:
