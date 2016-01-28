@@ -19,7 +19,7 @@ lib_info = {
 def get_file_names( wildcards ):
     file_list = []
     for sample in file_info.keys():
-        file_list.append( "analysis/demultiplex/" + sample + "/" + sample + ".fastq.gz" )
+        file_list.extend( ["analysis/demultiplex/full_seq/" + sample + "/" + sample + ".fastq.gz","analysis/demultiplex/sgRNA/" + sample + "/" + sample + ".fastq.gz"] )
     return file_list
 
 def csv2fa( wildcards ):
@@ -37,22 +37,23 @@ def bowtie_index_paths( wildcards ):
 
 rule target:
     input:
-        get_file_names,
-        csv2fa,
-        bowtie_index_paths,
-        expand( "analysis/bowtie_align/{sample}.bowtie.out", sample=file_info.keys() ),
-        "analysis/align_report.csv"
+        get_file_names
+#        csv2fa,
+#        bowtie_index_paths,
+#        expand( "analysis/bowtie_align/{sample}.bowtie.out", sample=file_info.keys() ),
+#        "analysis/align_report.csv"
 
 rule demultiplex:
     input:
         lambda wildcards: "concat_per_sample_fastq/" + file_info[wildcards.sample]["input_file"]
     output:
-        "analysis/demultiplex/{sample}/{sample}.fastq.gz"
+        out_file_20_bases="analysis/demultiplex/sgRNA/{sample}/{sample}.fastq.gz",
+        out_file_full_seq="analysis/demultiplex/full_seq/{sample}/{sample}.fastq.gz"
     params:
         universal_primer=lambda wildcards: file_info[wildcards.sample]["universal_primer"],
         barcode=lambda wildcards: file_info[wildcards.sample]["barcode"]
     shell:
-        "zcat {input} | perl CRISPR_stag/scripts/fetch_stag_seqs.pl --out_file {output} --universal_primer {params.universal_primer} --barcode {params.barcode}"
+        "zcat {input} | perl CRISPR_stag/scripts/fetch_stag_seqs.pl --out_file_20_bases {output.out_file_20_bases} --out_file_full_seq {output.out_file_full_seq} --universal_primer {params.universal_primer} --barcode {params.barcode}"
 
 rule csv_to_fasta:
     input:
@@ -85,7 +86,7 @@ rule create_bowtie_index:
 rule bowtie_align:
     input:
         bowtie_index= lambda wildcards: lib_info[file_info[wildcards.sample]["lib_type"]] + "_bowtie_index",
-        fastq_file="analysis/demultiplex/{sample}/{sample}.fastq.gz"
+        fastq_file="analysis/demultiplex/sgRNA/{sample}/{sample}.fastq.gz"
     output:
         "analysis/bowtie_align/{sample}.bowtie.out"
     log:
