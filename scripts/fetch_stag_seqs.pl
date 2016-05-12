@@ -29,7 +29,9 @@ sub print_info {
 		my $seq = <STDIN>;
         	my $sep = <STDIN>;
         	my $ascii = <STDIN>;
-        	if( $seq =~ /(.*${barcode}${uni_primer})(.+)/ ) {
+		my $barcode_string = allow_mismatch( $barcode, 1 );
+		my $universal_primer = allow_mismatch( $uni_primer, 1 );
+        	if( $seq =~ /.*(${barcode_string})(${universal_primer})(.+)/ ) {
             		print $out_20_bases $header;
 			print $out_full_seq $header;
             		print $out_20_bases substr( $seq, length( $1 ), 20 ), "\n";
@@ -40,4 +42,15 @@ sub print_info {
 			print $out_full_seq $ascii;
         	}
 	}
+}
+
+sub allow_mismatch {
+	my( $string, $num ) = @_;
+	my @info = ();
+	foreach my $index( 0 .. length($string) -1 ) {
+		my @temp = split("",$string);
+		$temp[$index] = '.';
+		push @info, join("",@temp);
+	}
+	return join("|",@info);
 }
