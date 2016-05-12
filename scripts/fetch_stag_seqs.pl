@@ -34,11 +34,11 @@ sub print_info {
         	if( $seq =~ /.*(${barcode_string})(${universal_primer})(.+)/ ) {
             		print $out_20_bases $header;
 			print $out_full_seq $header;
-            		print $out_20_bases substr( $seq, length( $1 ), 20 ), "\n";
+            		print $out_20_bases substr( $seq, length( $3 ), 20 ), "\n";
 			print $out_full_seq $seq;
             		print $out_20_bases $sep;
 			print $out_full_seq $sep;
-            		print $out_20_bases substr( $ascii, length( $1 ), 20 ), "\n";
+            		print $out_20_bases substr( $ascii, length( $3 ), 20 ), "\n";
 			print $out_full_seq $ascii;
         	}
 	}
@@ -47,10 +47,16 @@ sub print_info {
 sub allow_mismatch {
 	my( $string, $num ) = @_;
 	my @info = ();
-	foreach my $index( 0 .. length($string) -1 ) {
-		my @temp = split("",$string);
-		$temp[$index] = '.';
-		push @info, join("",@temp);
+	if( $num > 0 ){
+		foreach my $index( 0 .. length($string) -1 ) {
+			my @temp = split("",$string);
+			$temp[$index] = '.';
+			push @info, join("",@temp);
+		}
 	}
-	return join("|",@info);
+	if( $num > 0 ) {
+		return join("|",@info);
+	} else {
+		return $string;
+	}
 }
