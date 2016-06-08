@@ -34,11 +34,11 @@ sub print_info {
         	if( $seq =~ /(.*(${barcode_string})(${universal_primer}))(.+)/ ) {
             		print $out_20_bases $header;
 			print $out_full_seq $header;
-            		print $out_20_bases substr( $seq, length( $3 ), 20 ), "\n";
+            		print $out_20_bases substr( $seq, length( $1 ), 20 ), "\n";
 			print $out_full_seq $seq;
             		print $out_20_bases $sep;
 			print $out_full_seq $sep;
-            		print $out_20_bases substr( $ascii, length( $3 ), 20 ), "\n";
+            		print $out_20_bases substr( $ascii, length( $1 ), 20 ), "\n";
 			print $out_full_seq $ascii;
         	}
 	}
