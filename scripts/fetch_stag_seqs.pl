@@ -31,7 +31,7 @@ sub print_info {
         	my $ascii = <STDIN>;
 		my $barcode_string = allow_mismatch( $barcode, 1 );
 		my $universal_primer = allow_mismatch( $uni_primer, 1 );
-        	if( $seq =~ /.*(${barcode_string})(${universal_primer})(.+)/ ) {
+        	if( $seq =~ /(.*(${barcode_string})(${universal_primer}))(.+)/ ) {
             		print $out_20_bases $header;
 			print $out_full_seq $header;
             		print $out_20_bases substr( $seq, length( $3 ), 20 ), "\n";
