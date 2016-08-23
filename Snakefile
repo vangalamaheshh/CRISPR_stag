@@ -61,7 +61,7 @@ rule csv_to_fasta:
     output:
         "{file}.fa"
     shell:
-        "sed -ne \"2,$ p\" {input} | gawk 'BEGIN {{OFS=\";\"}}{{print \">\"$1,$2,$3; print $3; }}' 1>{output}"
+        "sed -ne \"2,$ p\" {input} | gawk 'BEGIN {{FS=\",\"; OFS=\";\";}}{{print \">\"$1,$2,$3; print $3; }}' 1>{output}"
 
 
 rule remove_dups:
