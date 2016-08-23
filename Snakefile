@@ -85,7 +85,7 @@ rule create_bowtie_index:
 
 rule bowtie_align:
     input:
-        bowtie_index= lambda wildcards: lib_info[file_info[wildcards.sample]["lib_type"]] + "_bowtie_index",
+        bowtie_index= lambda wildcards: lib_info[file_info[wildcards.sample]["lib_type"]] + "_bowtie_index/",
         fastq_file="analysis/demultiplex/sgRNA/{sample}/{sample}.fastq.gz"
     output:
         "analysis/bowtie_align/{sample}.bowtie.out"
