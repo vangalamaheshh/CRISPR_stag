@@ -1,5 +1,11 @@
+#!/usr/bin/env python
 # vim: syntax=python tabstop=4 expandtab
-# coding: utf-8
+
+#--------------------------------
+# @author: Mahesh Vangala
+# @email: vangalamaheshh@gmail.com
+# @date: Jan, 12, 2016
+#--------------------------------
 
 from collections import defaultdict
 
@@ -9,7 +15,7 @@ with open("metasheet.csv", "r") as fh:
     next(fh)
     for line in fh:
         info = line.strip().split(",")
-        file_info[info[0]] = {"barcode": info[1].upper(), "universal_primer": info[3].upper(), "input_file": info[4], "lib_type": info[5]}
+        file_info[info[0]] = {"barcode": info[2].upper(), "universal_primer": info[4].upper(), "input_file": info[1], "lib_type": info[5]}
 
 lib_info = {
     "Human_A": "/zfs/cores/mbcf/mbcf-storage/devel/umv/ref_files/human/Homo_sapiens/CRISPR/Gecko/Human_GeCKOv2_Library_A_09Mar2015",
@@ -106,16 +112,6 @@ rule bowtie_report:
         ref_list = ' -r '.join( input.ref_fa_files )
         shell( "perl CRISPR_stag/scripts/get_bowtie_counts.pl -r {ref_list} -b {file_list} 1>{output}" )
         
-
-
-
-
-
-
-
-
-
-
 
 
 
